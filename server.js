@@ -1,11 +1,14 @@
 const express = require("express");
+const path = require("path");
+
 const app = express();
 
 app.use(express.json());
+app.use(express.static("public"));
 
-// Simple test route
+// Serve frontend
 app.get("/", (req, res) => {
-  res.send("Task Manager is running 🚀");
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // Sample in-memory tasks
@@ -44,7 +47,7 @@ app.delete("/api/tasks/:id", (req, res) => {
   res.json({ message: "deleted" });
 });
 
-// IMPORTANT: bind to 0.0.0.0 for EC2/Docker
+// Start server
 app.listen(3000, "0.0.0.0", () => {
   console.log("Server running on port 3000");
 });
