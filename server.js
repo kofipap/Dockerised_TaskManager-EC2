@@ -1,57 +1,50 @@
 const express = require("express");
-    completed: false,
-  },
-  {
-    id: 2,
-    text: "Build CI/CD Pipeline",
-    completed: false,
-  },
+const app = express();
+
+app.use(express.json());
+
+// Simple test route
+app.get("/", (req, res) => {
+  res.send("Task Manager is running 🚀");
+});
+
+// Sample in-memory tasks
+let tasks = [
+  { id: 1, text: "Learn Docker", completed: false },
+  { id: 2, text: "Deploy to EC2", completed: false }
 ];
 
-// GET ALL TASKS
+// GET tasks
 app.get("/api/tasks", (req, res) => {
   res.json(tasks);
 });
 
-// CREATE TASK
+// ADD task
 app.post("/api/tasks", (req, res) => {
-  const newTask = {
+  const task = {
     id: Date.now(),
     text: req.body.text,
-    completed: false,
+    completed: false
   };
-
-  tasks.push(newTask);
-  res.status(201).json(newTask);
+  tasks.push(task);
+  res.json(task);
 });
 
-// TOGGLE COMPLETE
+// TOGGLE task
 app.put("/api/tasks/:id", (req, res) => {
-  const taskId = parseInt(req.params.id);
-
-  tasks = tasks.map((task) => {
-    if (task.id === taskId) {
-      return {
-        ...task,
-        completed: !task.completed,
-      };
-    }
-
-    return task;
-  });
-
-  res.json({ message: "Task updated" });
+  tasks = tasks.map(t =>
+    t.id == req.params.id ? { ...t, completed: !t.completed } : t
+  );
+  res.json({ message: "updated" });
 });
 
-// DELETE TASK
+// DELETE task
 app.delete("/api/tasks/:id", (req, res) => {
-  const taskId = parseInt(req.params.id);
-
-  tasks = tasks.filter((task) => task.id !== taskId);
-
-  res.json({ message: "Task deleted" });
+  tasks = tasks.filter(t => t.id != req.params.id);
+  res.json({ message: "deleted" });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// IMPORTANT: bind to 0.0.0.0 for EC2/Docker
+app.listen(3000, "0.0.0.0", () => {
+  console.log("Server running on port 3000");
 });
