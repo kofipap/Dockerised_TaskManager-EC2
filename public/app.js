@@ -1,4 +1,15 @@
 const taskList = document.getElementById("taskList");
+const taskInput = document.getElementById("taskInput");
+
+// LOAD TASKS
+async function loadTasks() {
+  const res = await fetch("/api/tasks");
+  const tasks = await res.json();
+
+  taskList.innerHTML = "";
+
+  tasks.forEach((task) => {
+    const li = document.createElement("li");
 
     if (task.completed) {
       li.classList.add("completed");
@@ -25,9 +36,9 @@ async function addTask() {
   await fetch("/api/tasks", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/json"
     },
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({ text })
   });
 
   taskInput.value = "";
@@ -37,7 +48,7 @@ async function addTask() {
 // TOGGLE TASK
 async function toggleTask(id) {
   await fetch(`/api/tasks/${id}`, {
-    method: "PUT",
+    method: "PUT"
   });
 
   loadTasks();
@@ -46,9 +57,12 @@ async function toggleTask(id) {
 // DELETE TASK
 async function deleteTask(id) {
   await fetch(`/api/tasks/${id}`, {
-    method: "DELETE",
+    method: "DELETE"
   });
 
   loadTasks();
 }
+
+// INIT
+loadTasks();
 
